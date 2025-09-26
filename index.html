@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRix - Railway Track Fittings Management System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Component-specific styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/overview.css">
+    <link rel="stylesheet" href="css/qr-generator.css">
+    <link rel="stylesheet" href="css/analytics.css">
+
+    <!-- Third-party libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-lg">
+            <div class="p-4 border-b">
+                <h1 class="text-xl font-semibold">QRix</h1>
+                <p class="text-sm text-gray-600">Railway Track Fittings Management System</p>
+            </div>
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="flex items-center p-3 text-gray-700 rounded hover:bg-blue-50" data-page="overview">
+                            <span class="mr-3">📊</span> Overview
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 text-gray-700 rounded hover:bg-blue-50" data-page="generate-qr">
+                            <span class="mr-3">🔲</span> Generate QR
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 text-gray-700 rounded hover:bg-blue-50" data-page="inventory">
+                            <span class="mr-3">📦</span> Inventory
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 text-gray-700 rounded hover:bg-blue-50" data-page="analytics">
+                            <span class="mr-3">📈</span> Analytics
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-3 text-gray-700 rounded hover:bg-blue-50" data-page="users">
+                            <span class="mr-3">👥</span> Users
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <div id="content" class="p-8">
+                <!-- Content will be loaded here dynamically -->
+            </div>
+        </main>
+    </div>
+
+    <!-- ES6 Module Scripts -->
+    <script type="module">
+        // Import modules
+        import { loadOverviewPage } from './js/tabs/overview.js';
+        import { loadQRGeneratorPage } from './js/tabs/qr-generator.js';
+        import { loadAnalyticsPage } from './js/tabs/analytics.js';
+
+        // Mock data for the dashboard
+        const dashboardData = {
+            stats: {
+                totalItems: 2847,
+                activeVendors: 24,
+                itemsUnderWarranty: 2391,
+                failedInspections: 43
+            },
+            recentActivity: [
+                {
+                    id: 'QR-2024-001',
+                    vendor: 'QRix Solutions',
+                    type: 'Elastic Rail Clip',
+                    date: '2024-01-15'
+                },
+                {
+                    id: 'QR-2024-002',
+                    vendor: 'TrackFit Industries',
+                    type: 'Rail Liner',
+                    date: '2024-01-14'
+                }
+            ],
+            alerts: [
+                {
+                    type: 'warning',
+                    message: '50 items expiring within 30 days',
+                    category: 'Warranty Management'
+                },
+                {
+                    type: 'danger',
+                    message: 'QRix Solutions: 8% defect rate',
+                    category: 'Quality Control'
+                }
+            ]
+        };
+
+        // Get main content div
+        const mainContent = document.getElementById('content');
+
+        // Handle navigation
+        document.querySelectorAll('[data-page]').forEach(link => {
+            link.addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                document.querySelectorAll('[data-page]').forEach(l => 
+                    l.classList.remove('bg-blue-50'));
+                
+                // Add active class to clicked link
+                link.classList.add('bg-blue-50');
+
+                // Get page identifier
+                const page = link.getAttribute('data-page');
+
+                // Load appropriate content
+                switch (page) {
+                    case 'overview':
+                        await loadOverviewPage(mainContent, dashboardData);
+                        break;
+                    case 'generate-qr':
+                        await loadQRGeneratorPage(mainContent);
+                        break;
+                    case 'analytics':
+                        await loadAnalyticsPage(mainContent);
+                        break;
+                    default:
+                        mainContent.innerHTML = '<p class="text-gray-500">Coming soon...</p>';
+                }
+            });
+        });
+
+        // Load overview page by default
+        document.querySelector('[data-page="overview"]').click();
+    </script>
+</body>
+</html>
